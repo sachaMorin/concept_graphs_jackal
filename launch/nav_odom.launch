@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!--- Run Move Base -->
+  <include file="$(find real_nav)/launch/include/move_base.launch">
+    <arg name="param_folder" value="odom_nav_params" />
+  </include>
+</launch>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <!-- Arguments -->
+  <arg name="cloud_topic"           default="/velodyne_points_throttle"  doc="input topic for the lidar pointcloud"/>
+  <arg name="parameter_filename"    default="jackal_localize.lua" doc="param file name"/>
+  <arg name="parameter_folder_path" default="$(find real_nav)/params/o3d/" doc="directory for the parameter files"/>
+  <arg name="launch_rviz"           default="false" doc="whether to launch rviz"/>
+  <arg name="map_saving_folder"     default="$(find real_nav)/data/maps/" doc="Path for saving the map (ignored here)"/>
+  <!--  Update the pcd file path in the lua file in the param directory-->
+  <!--  <arg name="pcd_file_path"         default="$(find real_nav)/data/maps/map.pcd" doc="absolute path for loading the map used for localization"/>-->
+  <node pkg="topic_tools" type="throttle" name="throttle" args="messages velodyne_points 10.0" />
+
+  <!-- Launch O3D to localize -->
+  <include file="$(find open3d_slam_ros)/launch/mapping.launch">
+    <arg name="cloud_topic"           value="$(arg cloud_topic)" />
+    <arg name="parameter_folder_path" value="$(arg parameter_folder_path)"/>
+    <arg name="parameter_filename"    value="$(arg parameter_filename)"/>
+    <arg name="launch_rviz"           value="$(arg launch_rviz)"/>
+    <arg name="map_saving_folder"     value="$(arg map_saving_folder)"/>
+  </include>
+
+  <!-- Launch map_o3d_to_odom node to connect the map_o3d and robot trees (raw localization) -->
+<!--  <node name="map_o3d_to_odom" pkg="real_nav" type="map_o3d_to_odom.py" output="screen"/>-->
+  <node name="o3d_odom_republisher" pkg="real_nav" type="o3d_odom_republisher.py" output="screen"/>
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_global_localization">
+      <remap from="/odometry/filtered" to="/global_localization"/>
+      <rosparam command="load" file="$(find real_nav)/params/global_localization.yaml" />
+  </node>
+
+  <!-- Publish static map to map_o3d tf (which is the same as base_link to velodyne) -->
+  <node name="map_to_map_o3d" pkg="real_nav" type="map_to_map_o3d.py" output="screen"/>
+
+  <!-- CF SLAM Tools-->
+  <include file="$(find real_nav)/launch/include/cf_tools.launch" />
+
+  <!-- Launch cost map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find real_nav)/data/maps/map.yaml" output="screen"/>
+
+  <!--- Run Move Base -->
+  <include file="$(find real_nav)/launch/include/move_base.launch" >
+    <arg name="param_folder" value="map_nav_params" />
+  </include>
+</launch>

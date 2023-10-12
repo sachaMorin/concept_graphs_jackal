@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!-- Gmapping scan_topic-->
+  <arg name="scan_topic"    default="/velodyne/scan" />
+
+  <!-- O3D Arguments -->
+  <arg name="cloud_topic"           default="/velodyne_points"  doc="input topic for the lidar pointcloud"/>
+  <arg name="parameter_filename"    default="param_velodyne_puck16.lua" doc="param file name"/>
+  <arg name="parameter_folder_path" default="$(find real_nav)/params/o3d/" doc="directory for the parameter files"/>
+  <arg name="launch_rviz"           default="false" doc="whether to launch rviz"/>
+  <arg name="map_saving_folder"     default="$(find real_nav)/data/maps/" doc="Path for saving the map (ignored here)"/>
+
+  <!-- Launch map_o3d_to_odom node to connect the map_o3d and robot trees (raw localization) -->
+  <node name="map_o3d_to_odom" pkg="real_nav" type="map_o3d_to_odom.py" output="screen"/>
+
+  <!-- Publish static map to map_o3d tf (which is the same as base_link to velodyne) -->
+  <node name="map_to_map_o3d" pkg="real_nav" type="map_to_map_o3d.py" output="screen"/>
+
+  <!-- Build 3d map with o3d -->
+  <include file="$(find open3d_slam_ros)/launch/mapping.launch">
+    <arg name="cloud_topic"           value="$(arg cloud_topic)" />
+    <arg name="parameter_folder_path" value="$(arg parameter_folder_path)"/>
+    <arg name="parameter_filename"    value="$(arg parameter_filename)"/>
+    <arg name="launch_rviz"           value="$(arg launch_rviz)"/>
+    <arg name="map_saving_folder"     value="$(arg map_saving_folder)"/>
+  </include>
+
+  <!-- Run the costmap node -->
+  <node name="costmap_node" pkg="costmap_2d" type="costmap_2d_node" >
+    <rosparam file="$(find real_nav)/params/o3d_to_costmap.yaml" command="load" ns="costmap" />
+  </node>
+
+  <!--- Run Move Base -->
+<!--  <include file="$(find real_nav)/launch/include/move_base.launch">-->
+<!--    <arg name="param_folder" value="odom_nav_params" />-->
+<!--  </include>-->
+</launch>

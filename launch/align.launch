@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <!-- Arguments -->
+  <arg name="cloud_topic"           default="/velodyne_points"  doc="input topic for the lidar pointcloud"/>
+  <arg name="parameter_filename"    default="align.lua" doc="param file name"/>
+  <arg name="parameter_folder_path" default="$(find real_nav)/params/o3d/" doc="directory for the parameter files"/>
+  <arg name="launch_rviz"           default="false" doc="whether to launch rviz"/>
+  <arg name="map_saving_folder"     default="$(find real_nav)/data/maps/" doc="Path for saving the map (ignored here)"/>
+  <!--  Update the pcd file path in the lua file in the param directory-->
+<!--    <arg name="pcd_file_path"         default="$(find real_nav)/data/maps/map.pcd" doc="absolute path for loading the map used for localization"/>-->
+
+  <!-- Launch O3D to localize -->
+  <include file="$(find open3d_slam_ros)/launch/mapping.launch">
+    <arg name="cloud_topic"           value="$(arg cloud_topic)" />
+    <arg name="parameter_folder_path" value="$(arg parameter_folder_path)"/>
+    <arg name="parameter_filename"    value="$(arg parameter_filename)"/>
+    <arg name="launch_rviz"           value="$(arg launch_rviz)"/>
+    <arg name="map_saving_folder"     value="$(arg map_saving_folder)"/>
+  </include>
+
+  <!-- Launch map_o3d_to_odom node to connect the map_o3d and robot trees (raw localization) -->
+  <node name="map_o3d_to_odom" pkg="real_nav" type="map_o3d_to_odom.py" output="screen"/>
+
+  <!-- Fake TF Tree to keep everyone happy-->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_map_o3d" args="0 0 -0.4 0 0 0 map_o3d map" />
+<!--  <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 map odom" />-->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="odom_to_velo" args="0 0 0 0 0 -180 odom velodyne" />
+
+  <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud">
+    <rosparam>
+      file_name: /home/sacha/Downloads/pointcloud_scan14.pcd
+      interval: 1.
+      frame_id: velodyne
+    </rosparam>
+
+  </node>
+
+    <!-- Downsample the point cloud -->
+  <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+  <node pkg="nodelet" type="nodelet" name="voxelgrid" args="load pcl/VoxelGrid pcl_manager" output="screen">
+    <remap from="~input" to="/cloud_pcd" />
+    <remap from="~output" to="/velodyne_points" />
+    <rosparam>
+      leaf_size: 0.05
+      filter_limit_min: -100
+      filter_limit_max: 100
+    </rosparam>
+  </node>
+
+</launch>

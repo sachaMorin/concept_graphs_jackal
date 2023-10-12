@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- Transform between the o3d map (lidar) and the cfslam map (obtained with align.launch)-->
+<!--    <node pkg="tf2_ros" type="static_transform_publisher" name="map_o3d_to_map_cf" args="-1.293 1.907 0.942 -1.486 0 -1.547 map_o3d map_cf" />-->
+    <!-- Scan 11 -->
+<!--    <node pkg="tf2_ros" type="static_transform_publisher" name="map_o3d_to_map_cf" args="-1.883 -1.205 1.039 1.279 0.339 0.127 map_o3d map_cf" />-->
+    <!-- Scan 12 -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_o3d_to_map_cf" args="-1.458 -0.598 1.108 0.984 0.352 0.223 map_o3d map_cf" />
+    <!-- Scan 14 -->
+<!--    <node pkg="tf2_ros" type="static_transform_publisher" name="map_o3d_to_map_cf" args="-1.772 -1.031 1.199 0.952 0.417 -0.162 map_o3d map_cf" />-->
+
+    <!-- IMU to cam-->
+    <node pkg="real_nav" type="imu_to_cam.py" name="imu_to_cam" />
+
+    <!-- Listen to CF SLAM pipeline and latch on the transform-->
+    <node pkg="real_nav" type="cfslam_pub.py" name="cfslam_pub" />
+
+    <!-- Check Costmap Service-->
+    <node pkg="real_nav" type="costmap_listener.py" name="costmap_listener" />
+
+    <!-- CF SLAM go_to_object service-->
+    <node pkg="real_nav" type="go_to_object.py" name="go_to_object" />
+
+    <!-- Custom Move Base Client-->
+    <node pkg="real_nav" type="move_base_custom_client.py" name="move_base_custom_client" />
+</launch>

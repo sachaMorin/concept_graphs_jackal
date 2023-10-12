@@ -1,0 +1,7 @@
+string query
+bool visual
+int64[] excluded_ids
+---
+int64 object_id
+string object_desc
+bool query_achievable

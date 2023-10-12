@@ -1,0 +1,13 @@
+<launch>
+    <arg name="cloud_topic"           default="/velodyne_points"  doc="input topic for the lidar pointcloud"/>
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+        <remap from="cloud_in" to="$(arg cloud_topic)"/>
+        <remap from="scan" to="/velodyne/scan"/>
+        <rosparam>
+            min_height: -.3
+            max_height: .7
+            range_max: 200
+            range_min: 0
+        </rosparam>
+    </node>
+</launch>

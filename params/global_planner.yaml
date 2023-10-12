@@ -1,0 +1,3 @@
+GlobalPlanner:
+  default_tolerance: 1.
+#  orientation_mode: 1

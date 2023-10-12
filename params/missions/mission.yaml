@@ -1,0 +1,49 @@
+waypoint_mission:
+  laundry_bag:
+    x_m: 3.978
+    y_m: -0.498
+    yaw_rad: -0.557
+  between_tables:
+    x_m: 3.643
+    y_m: -3.138
+    yaw_rad: 2.812
+  looking_other_lab:
+    x_m: 0.659
+    y_m: -2.851
+    yaw_rad: -1.575
+  fridge:
+    x_m: -2.911
+    y_m: -5.549
+    yaw_rad: 1.583
+  tools:
+    x_m: -0.078
+    y_m: -2.026
+    yaw_rad: 0.000
+  entrance:
+    x_m: 1.641
+    y_m: -0.166
+    yaw_rad: 3.067
+  pass_column:
+    x_m: -1.355
+    y_m: -0.656
+    yaw_rad: -1.965
+  entrance_2:
+    x_m: 1.641
+    y_m: -0.166
+    yaw_rad: 3.067
+  pass_column_2:
+    x_m: -1.355
+    y_m: -0.656
+    yaw_rad: -1.965
+  fridge_2:
+    x_m: -2.911
+    y_m: -5.549
+    yaw_rad: 1.583
+  between_tables_2:
+    x_m: 3.643
+    y_m: -3.138
+    yaw_rad: 2.812
+  laundry_bag_2:
+    x_m: 3.978
+    y_m: -0.498
+    yaw_rad: -0.557

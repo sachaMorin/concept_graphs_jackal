@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- Publish static map to map_o3d tf (which is the same as base_link to velodyne) -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_map_o3d" args="0 0 -0.4 0 0 0 map_o3d map" />
+
+    <!-- Publish static identity map to base_link tf -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_base_link" args="0 0 0 0 0 0 map base_link" />
+
+    <remap from="/cloud_pcd" to="/mapping_node/dense_map"/>
+    <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud">
+        <rosparam>
+            file_name: /home/sacha/cf_ws/src/real_nav/data/maps/map.pcd
+            interval: 1
+            frame_id: map_o3d
+        </rosparam>
+    </node>
+<!--    <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />-->
+
+    <!-- Slice the point cloud -->
+<!--    <node pkg="nodelet" type="nodelet" name="passthrough" args="load pcl/PassThrough pcl_manager" output="screen">-->
+<!--      <remap from="~input" to="/cloud_pcd" />-->
+<!--      <remap from="~output" to="/cloud_pcd_filtered" />-->
+<!--      <rosparam>-->
+<!--        filter_field_name: z-->
+<!--        filter_limit_min: -0.3-->
+<!--        filter_limit_max: 0.7-->
+<!--        filter_limit_negative: False-->
+<!--      </rosparam>-->
+<!--    </node>-->
+
+
+    <!-- Launch cost map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find real_nav)/data/maps/map.yaml" output="screen"/>
+</launch>

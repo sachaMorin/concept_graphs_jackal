@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="mission_file_name" default="mission.yaml" doc="Name of the mission file"/>
+  <arg name="mission_file_path" default="$(find real_nav)/params/missions/$(arg mission_file_name)" doc="Path to the mission yaml file." />
+  <arg name="reference_frame" default="map" doc="The frame where the waypoints are going to be published." />
+
+  <node pkg="real_nav" type="mission_planner.py" name="mission_planner" output="screen" args="$(arg mission_file_path) $(arg reference_frame)" />
+</launch>
