@@ -20,7 +20,7 @@ are straightforward to install, e.g.
 sudo apt get install ros-noetic-global-planner
 ```
 Specifically for global_planner, there were issues with the goal tolerance in my setup. You may want to consider
-building this [commit](https://www.notion.so/Jackal-dc467ede1a194336bd183dfdeba701dc) from source to fix this.
+building this [commit](https://github.com/wyca-robotics/navigation/tree/81f71d1e6fc77fdde996d0ecfb06d457cbb6b94b) from source to fix this.
 
 ## Booting and Troubleshooting
 When you boot the jackal, you may want to run
