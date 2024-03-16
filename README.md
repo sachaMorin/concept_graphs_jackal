@@ -1,9 +1,13 @@
-# real_nav ROS package
+# ConceptGraphs: Jackal Mapping and Navigation
+I'm releasing this code after a few people expressed interest in the [ConceptGraphs Jackal experiments](https://concept-graphs.github.io/). The codebase is far
+from polished and is somewhat specific to our setup. As such, it should be considered as a rough starting point for your own experiments.
+
+## Intro
 A set of ROS nodes and launch files to map and navigate the Jackal using
-open3d-slam and move_base.
+open3d-slam and move_base. **Look at the other README for more details on ConceptGraphs.**
 
 You can tweak all the
-move_base and open-3d-slam parameters can be changed in the `params` folder.
+move_base and open-3d-slam parameters in the `params` folder.
 
 ## Install
 
@@ -23,6 +27,8 @@ Specifically for global_planner, there were issues with the goal tolerance in my
 building this [commit](https://github.com/wyca-robotics/navigation/tree/81f71d1e6fc77fdde996d0ecfb06d457cbb6b94b) from source to fix this.
 
 ## Booting and Troubleshooting
+This section is specific to our robot. Feel free to skip it.
+
 When you boot the jackal, you may want to run
 ```shell
 rostopic echo velodyne_points
@@ -37,7 +43,7 @@ to make sure the velodyne and front camera are publishing data. If not, simply r
 Also make sure to source the workspace with this package. Here's the command as of
 Aug 2023, but this may change if you reinstall stuff.
 ```shell
-source cf_ws/devel/setup.bash 
+source $YOUR_WORKSPACE/devel/setup.bash 
 ```
 
 If you need to install stuff on the robot, but do not have internet access, this is likely
@@ -104,7 +110,7 @@ for our experiments and can be addressed by manually editing the map pgm file to
 
 
 ## align.launch
-This file can be used to register a point cloud against the Jackal's lidar map. The point cloud needs
+This file can be used to register a point cloud against the Jackal's lidar map (e.g., the ConceptGraphs point cloud). The point cloud needs
 to be in the pcd file format.
 1. Make sure that that `params.map_initializer.pcd_file_path ` in `params/o3d/align.lua` points to the lidar map you want to use.
 2. Update the pcd file path of the point cloud you want to register in `launch/align.launch`. You should change the `file_name` parameter of the `pcd_to_pointcloud` node.

@@ -4,9 +4,7 @@ given a user query and potentially find another location if the object is missin
 
 ## Install
 
-TODO. 
-
-For `ConceptGraphTools.py` you need to install the dependencies of the [main ConceptGraphs repo](https://github.com/concept-graphs/concept-graphs). I found it easier to use a venv instead of conda since it interacts better with ROS nodes. You may need to update the shebangs in some files to point to your virtual environment. 
+For `ConceptGraphTools.py` you need to install the dependencies of the [main ConceptGraphs repo](https://github.com/concept-graphs/concept-graphs). I found it easier to use a venv instead of conda since it interacts better with ROS nodes. **You will need to update the shebangs in some files to point to your virtual environment.**
 
 ## Overview
 * `nav.launch`: Launch the nav stack on the robot.
@@ -17,9 +15,11 @@ For `ConceptGraphTools.py` you need to install the dependencies of the [main Con
   * `map_cf`: ConceptGraphs map frame. The ConceptGraphs map frame is registered to the main map using the `align.launch` script.
   * `object_location`: The frame of the object of interest as identified by the ConceptGraph `query_goal` service given the user query.
   * `odom`: Odom frame.
-  * `base_link`: Robot pose.
+  * `base_link`: Robot frame.
 
 ## Abstract Navigation Queries
+**Note: Models were hosted off-board on a separate GPU workstation named OmegaDuck.**
+
 First you need to have mapped the environment with the Jackal (see the main README).  Then you
 should map the place with ConceptGraphs and register the point cloud against the Jackal's map. Have a look
 at `align.launch` in the main README for more details. We used an Azure Kinect for our ConceptGraphs map.
@@ -68,6 +68,8 @@ and republishes in the tf tree as a `map_cf -> object_location` transform. This 
 time syncing issues between the robot and OmegaDuck.
 
 ## Traversability
-Traversability stuff is in on a separate branch (`traversability`). You should use the traversability tool in the CFSLAM repo
-to sort out non traversable objects in the map then upload the non-traversable pcd to the robot. You can then
-tweak cftools to broadcast the pcd and add it to a costmap to plan around non-traversable objects. Easy!
+We will not release the traversability code at this time, since it's spread across multiple repos and hard to consolidate.
+At a high-level, you need to
+1. Iterate over the objects in the scene graph and ask GPT if they are safe to traverse. See the paper for the prompt.
+2. Build a point cloud with the non-traversable objects and broadcast it with ROS.
+3. Add the point cloud to the costmap to allow planning around non-traversable objects with the navstack.
